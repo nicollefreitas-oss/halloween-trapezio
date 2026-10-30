@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Halloween Trapézio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Creepster&family=Rubik:wght@400;500;700&display=swap">
+<style>
+/* Layout: noite azul Trapézio; cabeçalho com logo, grade de 6 fantasias, painel de resultado ao vivo ao lado (empilha no celular) */
+:root{
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --night:#0b1240; --night-2:#121c5e; --brand:#2b44d6; --pumpkin:#ff7a1a; --pumpkin-soft:#ffb070;
+  --witch:#9b6bff; --bone:#f3efe6; --mist:#aab3e8; --line:rgba(170,179,232,.22);
+  --display:"Creepster","Impact",fantasy; --body:"Rubik",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+body{background:var(--night);color:var(--bone);font-family:var(--body);font-size:15px;line-height:1.5;
+  background-image:radial-gradient(1200px 600px at 85% -10%,rgba(43,68,214,.55),transparent 60%),radial-gradient(800px 500px at -10% 110%,rgba(155,107,255,.18),transparent 60%);
+  background-attachment:fixed;min-height:100%}
+.wrap{max-width:1180px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.garland{height:34px;background-image:radial-gradient(circle at 17px 17px,var(--pumpkin) 11px,transparent 12px),radial-gradient(circle at 51px 17px,#1d1d1d 11px,transparent 12px);background-size:68px 34px;opacity:.9;
+  -webkit-mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+header{display:flex;flex-direction:column;gap:14px;padding-block:18px 26px}
+header img.logo{width:min(320px,70%);height:auto;display:block}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(40px,7vw,76px);line-height:1;margin:0;letter-spacing:.02em;color:var(--pumpkin);text-wrap:balance;text-shadow:0 0 28px rgba(255,122,26,.35)}
+h1 span{color:var(--witch)}
+.lede{margin:0;max-width:62ch;color:var(--mist);font-size:16px}
+.status{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;font-size:13px;color:var(--mist);width:fit-content}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--mist)}
+.status.live i{background:#3ddc84;box-shadow:0 0 0 0 rgba(61,220,132,.6);animation:pulse 1.8s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(61,220,132,0)}100%{box-shadow:0 0 0 0 rgba(61,220,132,0)}}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:28px;align-items:start}
+@media (max-width:920px){.layout{grid-template-columns:minmax(0,1fr)}}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
+.card{position:relative;display:flex;flex-direction:column;background:var(--night-2);border:2px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;text-align:left;color:inherit;font:inherit;padding:0;transition:transform .15s,border-color .15s,box-shadow .15s}
+.card:hover:not(:disabled){transform:translateY(-3px);border-color:var(--pumpkin-soft)}
+.card:focus-visible{outline:3px solid var(--pumpkin);outline-offset:3px}
+.card.sel{border-color:var(--pumpkin);box-shadow:0 0 0 4px rgba(255,122,26,.25),0 10px 30px rgba(255,122,26,.25)}
+.card.mine{border-color:var(--witch);box-shadow:0 0 0 4px rgba(155,107,255,.25)}
+.card:disabled{cursor:default}
+.card img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;max-width:100%}
+.card .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px}
+.card .name{font-weight:500;font-size:14px;min-width:0}
+.card .name small{display:block;color:var(--mist);font-weight:400;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.card .tick{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:14px;color:var(--night)}
+.card.sel .tick{background:var(--pumpkin);border-color:var(--pumpkin)}
+.card.mine .tick{background:var(--witch);border-color:var(--witch)}
+.badge{position:absolute;top:10px;right:10px;background:var(--witch);color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px}
+aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:rgba(18,28,94,.85);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;backdrop-filter:blur(6px)}
+@media (max-width:920px){aside{position:static}}
+aside h2{font-family:var(--display);font-weight:400;font-size:32px;margin:0;color:var(--pumpkin);letter-spacing:.03em}
+.total{color:var(--mist);font-size:13px;font-variant-numeric:tabular-nums}
+.rows{display:flex;flex-direction:column;gap:12px}
+.row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:10px;align-items:center}
+.row img{width:40px;height:40px;object-fit:cover;object-position:top;border-radius:8px}
+.row .lbl{font-size:13px;display:flex;justify-content:space-between;gap:8px;margin-bottom:4px}
+.row .lbl b{font-weight:500}
+.bar{height:10px;background:rgba(170,179,232,.15);border-radius:999px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--witch),var(--pumpkin));border-radius:999px;transition:width .6s ease}
+.row.lead .bar i{background:var(--pumpkin)}
+.row .n{font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;min-width:2ch;text-align:right}
+.crown{color:var(--pumpkin)}
+.empty{color:var(--mist);font-size:14px;margin:0}
+.note{font-size:12px;color:var(--mist);margin:0;border-top:1px solid var(--line);padding-top:12px}
+.dock{position:fixed;left:0;right:0;bottom:0;padding:14px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:rgba(11,18,64,.96);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:20}
+.dock .in{max-width:1180px;width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.dock p{margin:0;font-size:15px}
+.dock p b{color:var(--pumpkin)}
+.btns{display:flex;gap:10px}
+button.primary,button.ghost{font:inherit;font-weight:700;border-radius:999px;padding:11px 22px;cursor:pointer;border:2px solid transparent}
+button.primary{background:var(--pumpkin);color:#1a0e00}
+button.primary:hover{filter:brightness(1.08)}
+button.primary:disabled{opacity:.6;cursor:wait}
+button.ghost{background:transparent;color:var(--bone);border-color:var(--line)}
+button:focus-visible{outline:3px solid var(--bone);outline-offset:2px}
+.banner{border-radius:12px;padding:12px 16px;font-size:14px;border:1px solid var(--line);background:rgba(155,107,255,.15)}
+.banner.ok{background:rgba(155,107,255,.18);border-color:var(--witch)}
+.banner.warn{background:rgba(255,122,26,.12);border-color:var(--pumpkin)}
+body.has-dock .wrap{padding-bottom:120px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+body.has-dock .wrap{padding-bottom:140px}
+</style>
+</head>
+<body>
+
+
+<div class="garland" aria-hidden="true"></div>
+<div class="wrap">
+  <header>
+    <img class="logo" src="img/logo.png" alt="Grupo Trapézio">
+    <h1>Concurso de <span>Fantasias</span></h1>
+    <p class="lede">Escolha a melhor fantasia do Halloween Trapézio. O voto é anônimo: ninguém vê quem votou em quem, só o placar. É só tocar na fantasia favorita e confirmar. Cada pessoa vota uma vez.</p>
+    <div class="status" id="status"><i></i><span id="statusTxt">Conectando ao placar…</span></div>
+  </header>
+  <div id="banner" class="banner" hidden></div>
+  <div class="layout" style="margin-top:18px">
+    <section class="grid" id="grid" aria-label="Fantasias concorrentes"></section>
+    <aside aria-live="polite">
+      <div>
+        <h2>Placar ao vivo</h2>
+        <div class="total" id="total">Aguardando votos</div>
+      </div>
+      <div class="rows" id="rows"></div>
+      <p class="note">O placar atualiza sozinho a cada novo voto. Os votos ficam guardados sem nome, e-mail ou IP.</p>
+    </aside>
+  </div>
+</div>
+<div class="dock" id="dock" hidden>
+  <div class="in">
+    <p id="dockTxt"></p>
+    <div class="btns">
+      <button class="ghost" id="cancel" type="button">Trocar escolha</button>
+      <button class="primary" id="confirm" type="button">Confirmar voto</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const COSTUMES = [
+  {id:1,name:"Wandinha"},{id:2,name:"Abóbora"},{id:3,name:"Malévola"},
+  {id:4,name:"Noiva do Chuck"},{id:5,name:"Bruxa"},{id:6,name:"Pirata"}
+];
+const IMG = id => `img/fantasia-${id}.jpg?v=2`;
+const API = "/api/votos";
+const $ = s => document.querySelector(s);
+const state = { counts:{}, total:0, myVote:null, selected:null, ready:false, busy:false };
+// Código aleatório do aparelho (sem nome, e-mail ou IP), guardado no navegador e num cookie.
+function getDevice(){
+  const KEY="trapezio_halloween_device"; let id=null;
+  try{ id=localStorage.getItem(KEY); }catch(e){}
+  if(!id){ const m=document.cookie.match(/(?:^|; )thd=([a-zA-Z0-9-]+)/); if(m) id=m[1]; }
+  if(!id){ id=crypto.randomUUID?crypto.randomUUID():Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,"0")).join(""); }
+  try{ localStorage.setItem(KEY,id); }catch(e){}
+  document.cookie=`thd=${id}; max-age=31536000; path=/; SameSite=Lax`;
+  return id;
+}
+const device=getDevice();
+try{ const v=localStorage.getItem("trapezio_halloween_voto"); if(v) state.myVote=Number(v); }catch(e){}
+function renderGrid(){
+  const g=$("#grid"); g.textContent="";
+  const locked = state.myVote!==null;
+  for(const c of COSTUMES){
+    const b=document.createElement("button");
+    b.type="button"; b.className="card"; b.id="c"+c.id;
+    if(state.selected===c.id) b.classList.add("sel");
+    if(state.myVote===c.id) b.classList.add("mine");
+    b.disabled = locked;
+    b.setAttribute("aria-pressed", state.selected===c.id ? "true":"false");
+    b.innerHTML = `<img alt="Fantasia ${c.id}: ${c.name}" src="${IMG(c.id)}"><div class="meta"><div class="name"><small>Fantasia ${c.id}</small>${c.name}</div><div class="tick">${state.myVote===c.id||state.selected===c.id?"✓":""}</div></div>`;
+    if(state.myVote===c.id){const s=document.createElement("span");s.className="badge";s.textContent="Seu voto";b.appendChild(s);}
+    b.addEventListener("click",()=>{ if(locked) return; state.selected = state.selected===c.id?null:c.id; renderAll(); });
+    g.appendChild(b);
+  }
+}
+function renderResults(){
+  const rows=$("#rows"); rows.textContent="";
+  const max=Math.max(0,...Object.values(state.counts));
+  const sorted=[...COSTUMES].sort((a,b)=>(state.counts[b.id]||0)-(state.counts[a.id]||0)||a.id-b.id);
+  for(const c of sorted){
+    const n=state.counts[c.id]||0, pct=state.total?Math.round(n/state.total*100):0;
+    const r=document.createElement("div"); r.className="row"+(n>0&&n===max?" lead":"");
+    r.innerHTML=`<img alt="" src="${IMG(c.id)}"><div><div class="lbl"><b>${n>0&&n===max?'<span class="crown">♛</span> ':''}${c.id}. ${c.name}</b><span>${pct}%</span></div><div class="bar"><i style="width:${max?n/max*100:0}%"></i></div></div><div class="n">${n}</div>`;
+    rows.appendChild(r);
+  }
+  $("#total").textContent = !state.ready ? "Carregando placar…" : state.total===0 ? "Nenhum voto ainda. Seja a primeira pessoa a votar!" : `${state.total} ${state.total===1?"voto":"votos"} até agora`;
+}
+function renderDock(){
+  const show = state.selected!==null && state.myVote===null;
+  $("#dock").hidden=!show; document.body.classList.toggle("has-dock",show);
+  if(show){ const c=COSTUMES.find(x=>x.id===state.selected); $("#dockTxt").innerHTML=`Votar na <b>Fantasia ${c.id} · ${c.name}</b>? Não dá para mudar depois.`; }
+  $("#confirm").disabled=state.busy; $("#confirm").textContent=state.busy?"Enviando…":"Confirmar voto";
+}
+function banner(msg,kind){ const b=$("#banner"); if(!msg){b.hidden=true;return;} b.className="banner "+(kind||""); b.textContent=msg; b.hidden=false; }
+function renderAll(){ renderGrid(); renderResults(); renderDock(); }
+
+
+function apply(d){ if(!d||!d.counts) return; state.counts=d.counts; state.total=d.total||0; state.ready=true;
+  if(d.meuVoto){ state.myVote=Number(d.meuVoto); state.selected=null; try{ localStorage.setItem("trapezio_halloween_voto",String(state.myVote)); }catch(e){} }
+  $("#status").classList.add("live"); $("#statusTxt").textContent="Placar ao vivo"; }
+let failures=0;
+async function refresh(){
+  try{ const r=await fetch(`${API}?device=${encodeURIComponent(device)}`,{cache:"no-store"}); if(!r.ok) throw 0; apply(await r.json()); failures=0;
+    if(state.myVote && $("#banner").hidden) banner("Você já votou. Obrigada! Agora é só acompanhar o placar.","ok"); }
+  catch(e){ if(++failures>=2){ $("#status").classList.remove("live"); $("#statusTxt").textContent="Sem conexão com o placar. Tentando de novo…"; } }
+  renderAll();
+}
+$("#cancel").addEventListener("click",()=>{state.selected=null;renderAll();});
+$("#confirm").addEventListener("click",async()=>{
+  if(state.busy||state.selected===null) return;
+  state.busy=true; renderDock();
+  try{
+    const r=await fetch(API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({fantasia:state.selected,device})});
+    const d=await r.json().catch(()=>({}));
+    if(r.ok){ apply(d); banner("Voto registrado! Obrigada por participar. Acompanhe o placar ao vivo.","ok"); }
+    else if(r.status===409){ apply(d); banner("Este aparelho já votou. O primeiro voto continua valendo.","ok"); }
+    else banner(d.erro||"Não foi possível registrar o voto. Tente de novo.","warn");
+  }catch(e){ banner("Sem conexão. Verifique a internet e tente de novo.","warn"); }
+  state.busy=false; renderAll();
+});
+if(state.myVote) banner("Você já votou. Obrigada! Agora é só acompanhar o placar.","ok");
+renderAll(); refresh();
+setInterval(()=>{ if(!document.hidden) refresh(); },4000);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) refresh(); });
+</script>
+
+
+</body>
+</html>
