@@ -124,24 +124,25 @@ body.has-dock .wrap{padding-bottom:140px}
 <script>
 const COSTUMES = [
   {id:1,name:"Wandinha"},{id:2,name:"Abóbora"},{id:3,name:"Malévola"},
-  {id:4,name:"Noiva do Chuck"},{id:5,name:"Bruxa"},{id:6,name:"Pirata"}
+  {id:4,name:"Noiva do Chuck"},{id:5,name:"Bruxa"},{id:6,name:"Pirata"},
+  {id:7,name:"Pistoleiro Fantasma"}
 ];
-const IMG = id => `img/fantasia-${id}.jpg?v=2`;
+const IMG = id => `img/fantasia-${id}.jpg?v=3`;
 const API = "/api/votos";
 const $ = s => document.querySelector(s);
 const state = { counts:{}, total:0, myVote:null, selected:null, ready:false, busy:false };
 // Código aleatório do aparelho (sem nome, e-mail ou IP), guardado no navegador e num cookie.
 function getDevice(){
-  const KEY="trapezio_halloween_device"; let id=null;
+  const KEY="trapezio_halloween_device_v2"; let id=null;
   try{ id=localStorage.getItem(KEY); }catch(e){}
-  if(!id){ const m=document.cookie.match(/(?:^|; )thd=([a-zA-Z0-9-]+)/); if(m) id=m[1]; }
+  if(!id){ const m=document.cookie.match(/(?:^|; )thd2=([a-zA-Z0-9-]+)/); if(m) id=m[1]; }
   if(!id){ id=crypto.randomUUID?crypto.randomUUID():Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,"0")).join(""); }
   try{ localStorage.setItem(KEY,id); }catch(e){}
-  document.cookie=`thd=${id}; max-age=31536000; path=/; SameSite=Lax`;
+  document.cookie=`thd2=${id}; max-age=31536000; path=/; SameSite=Lax`;
   return id;
 }
 const device=getDevice();
-try{ const v=localStorage.getItem("trapezio_halloween_voto"); if(v) state.myVote=Number(v); }catch(e){}
+try{ const v=localStorage.getItem("trapezio_halloween_voto_v2"); if(v) state.myVote=Number(v); }catch(e){}
 function renderGrid(){
   const g=$("#grid"); g.textContent="";
   const locked = state.myVote!==null;
@@ -181,7 +182,7 @@ function renderAll(){ renderGrid(); renderResults(); renderDock(); }
 
 
 function apply(d){ if(!d||!d.counts) return; state.counts=d.counts; state.total=d.total||0; state.ready=true;
-  if(d.meuVoto){ state.myVote=Number(d.meuVoto); state.selected=null; try{ localStorage.setItem("trapezio_halloween_voto",String(state.myVote)); }catch(e){} }
+  if(d.meuVoto){ state.myVote=Number(d.meuVoto); state.selected=null; try{ localStorage.setItem("trapezio_halloween_voto_v2",String(state.myVote)); }catch(e){} }
   $("#status").classList.add("live"); $("#statusTxt").textContent="Placar ao vivo"; }
 let failures=0;
 async function refresh(){

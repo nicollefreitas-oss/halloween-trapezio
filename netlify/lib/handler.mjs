@@ -1,5 +1,5 @@
 // Lógica da votação: um voto por aparelho. Nada de nome, e-mail ou IP é guardado.
-export const TOTAL_FANTASIAS = 6;
+export const TOTAL_FANTASIAS = 7;
 const ID_OK = /^[a-zA-Z0-9-]{16,64}$/;
 
 const json = (body, status = 200) =>
